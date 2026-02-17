@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { COURSE_MODULES } from './constants';
 import { Applicant, Module } from './types';
 
-// Components
+// --- Components ---
+
 const Navbar = () => (
   <nav className="fixed top-0 w-full z-50 glass border-b border-white/5 px-8 py-4 flex justify-between items-center">
     <div className="flex items-center gap-3">
@@ -27,7 +28,7 @@ const Hero = () => (
     </div>
     <div className="relative z-10 text-center px-6 max-w-5xl">
       <span className="text-xs tracking-[0.4em] text-blue-400 font-semibold mb-6 block uppercase">Yonsei University Professional Course</span>
-      <h1 className="text-5xl md:text-8xl font-myeongjo architecture leading-tight mb-8 gradient-text">
+      <h1 className="text-5xl md:text-8xl font-myeongjo leading-tight mb-8 gradient-text">
         AI로 빚어내는<br/>K-Culture 에듀테크
       </h1>
       <p className="text-lg md:text-xl text-stone-400 max-w-2xl mx-auto font-light leading-relaxed mb-12">
@@ -45,7 +46,6 @@ const Hero = () => (
   </section>
 );
 
-// Fix: Use React.FC and the Module interface to correctly type props and avoid 'key' property errors
 const ModuleCard: React.FC<{ module: Module }> = ({ module }) => (
   <div className="glass p-8 rounded-sm hover:border-blue-500/50 transition-all group">
     <div className="flex justify-between items-start mb-6">
@@ -72,9 +72,159 @@ const ModuleCard: React.FC<{ module: Module }> = ({ module }) => (
   </div>
 );
 
+// --- Admin Components ---
+
+const AdminLogin: React.FC<{ onLogin: (success: boolean) => void, onClose: () => void }> = ({ onLogin, onClose }) => {
+  const [userId, setUserId] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (userId === 'one' && password === 'pass1234') {
+      onLogin(true);
+    } else {
+      setError('ID 또는 비밀번호가 일치하지 않습니다.');
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-6">
+      <div className="glass max-w-md w-full p-8 rounded-sm">
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-2xl font-myeongjo">Admin Access</h2>
+          <button onClick={onClose} className="text-stone-500 hover:text-white">✕</button>
+        </div>
+        <form onSubmit={handleLogin} className="space-y-6">
+          <div>
+            <label className="block text-[10px] tracking-widest text-stone-500 mb-2 uppercase">User ID</label>
+            <input 
+              type="text" 
+              className="w-full bg-white/5 border border-white/10 p-3 rounded-sm focus:outline-none focus:border-blue-500 transition-colors"
+              value={userId}
+              onChange={e => setUserId(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-[10px] tracking-widest text-stone-500 mb-2 uppercase">Password</label>
+            <input 
+              type="password" 
+              className="w-full bg-white/5 border border-white/10 p-3 rounded-sm focus:outline-none focus:border-blue-500 transition-colors"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          {error && <p className="text-red-400 text-xs">{error}</p>}
+          <button type="submit" className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold tracking-widest transition-colors rounded-sm">
+            LOGIN
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+const AdminDashboard: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
+  const [applicants, setApplicants] = useState<Applicant[]>([]);
+
+  useEffect(() => {
+    const data = JSON.parse(localStorage.getItem('applicants') || '[]');
+    setApplicants(data);
+  }, []);
+
+  const downloadExcel = () => {
+    if (applicants.length === 0) return alert('다운로드할 데이터가 없습니다.');
+    
+    const headers = ['ID', 'Name', 'Email', 'Phone', 'Motivation', 'Applied At'];
+    const rows = applicants.map(a => [
+      a.id,
+      a.name,
+      a.email,
+      a.phone,
+      `"${a.motivation.replace(/"/g, '""')}"`,
+      new Date(a.appliedAt).toLocaleString()
+    ]);
+    
+    const csvContent = "\uFEFF" + [headers, ...rows].map(e => e.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Yonsei_Applicants_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] bg-black overflow-y-auto pt-24 px-8 pb-12">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
+          <div>
+            <h2 className="text-3xl font-myeongjo mb-2">Management Dashboard</h2>
+            <p className="text-stone-400 text-sm font-light uppercase tracking-widest">K-Culture & Language EdTech Professional Course</p>
+          </div>
+          <div className="flex gap-4">
+            <button 
+              onClick={downloadExcel}
+              className="px-6 py-2 bg-white text-black text-xs font-bold tracking-widest hover:bg-stone-200 transition-colors rounded-sm"
+            >
+              DOWNLOAD EXCEL (CSV)
+            </button>
+            <button 
+              onClick={onLogout}
+              className="px-6 py-2 border border-white/20 text-xs font-bold tracking-widest hover:bg-white/10 transition-colors rounded-sm"
+            >
+              LOGOUT
+            </button>
+          </div>
+        </div>
+
+        <div className="glass overflow-x-auto rounded-sm">
+          <table className="w-full text-left text-sm whitespace-nowrap">
+            <thead>
+              <tr className="border-b border-white/10 text-stone-500 uppercase tracking-widest text-[10px]">
+                <th className="px-6 py-4">Name</th>
+                <th className="px-6 py-4">Contact</th>
+                <th className="px-6 py-4">Email</th>
+                <th className="px-6 py-4">Applied Date</th>
+                <th className="px-6 py-4">Motivation</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/5">
+              {applicants.length > 0 ? applicants.map((a) => (
+                <tr key={a.id} className="hover:bg-white/5 transition-colors">
+                  <td className="px-6 py-4 font-bold">{a.name}</td>
+                  <td className="px-6 py-4 text-stone-400">{a.phone}</td>
+                  <td className="px-6 py-4 text-stone-400">{a.email}</td>
+                  <td className="px-6 py-4 text-[10px] text-stone-500">
+                    {new Date(a.appliedAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 text-xs text-stone-400 max-w-xs truncate">
+                    {a.motivation}
+                  </td>
+                </tr>
+              )) : (
+                <tr>
+                  <td colSpan={5} className="px-6 py-20 text-center text-stone-500 italic">지원자가 아직 없습니다.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- Main App ---
+
 const App: React.FC = () => {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', motivation: '' });
   const [applied, setApplied] = useState(false);
+  const [adminView, setAdminView] = useState<'none' | 'login' | 'dashboard'>('none');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,7 +241,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
       <Navbar />
       <Hero />
 
@@ -105,7 +255,7 @@ const App: React.FC = () => {
             </h3>
             <div className="space-y-6 text-stone-400 font-light leading-relaxed">
               <p>본 과정은 최신 AI 기술을 활용하여 K-Culture와 한국어를 융합한 혁신적인 교육 콘텐츠를 기획, 제작, 평가하는 전 과정을 다루는 전문가 양성 과정입니다.</p>
-              <p>2026년 최신 에듀테크 트렌드 분석을 시작으로 AI 이미지/영상 생성, 음성 코칭, 그리고 데이터 기반 학습 분석까지 22주(실습 포함)의 체계적인 워크숍을 제공합니다.</p>
+              <p>2026년 최신 에듀테크 트렌드 분석을 시작으로 AI 이미지/영상 생성, 음성 코칭, 그리고 데이터 기반 학습 분석까지 체계적인 워크숍을 제공합니다.</p>
             </div>
             <div className="grid grid-cols-2 gap-8 mt-12">
               <div>
@@ -119,8 +269,8 @@ const App: React.FC = () => {
             </div>
           </div>
           <div className="relative aspect-square">
-            <div className="absolute inset-0 glass rounded-full animate-pulse" />
-            <img src="https://picsum.photos/id/1011/800/800" alt="Culture Tech" className="rounded-full object-cover w-full h-full p-4 grayscale" />
+            <div className="absolute inset-0 glass rounded-full animate-pulse opacity-20" />
+            <img src="https://images.unsplash.com/photo-1547721064-da6cfb341d50?q=80&w=1000&auto=format&fit=crop" alt="Culture Tech" className="rounded-full object-cover w-full h-full p-4 grayscale" />
           </div>
         </div>
       </section>
@@ -143,7 +293,7 @@ const App: React.FC = () => {
         <div className="flex flex-col md:flex-row gap-16 items-center">
           <div className="w-64 h-64 flex-shrink-0 relative">
             <div className="absolute inset-0 border border-blue-500/30 -m-4 translate-x-2 translate-y-2" />
-            <img src="https://picsum.photos/id/1005/400/400" alt="Ko Je-hyuk" className="w-full h-full object-cover grayscale" />
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000&auto=format&fit=crop" alt="Ko Je-hyuk" className="w-full h-full object-cover grayscale" />
           </div>
           <div>
             <h2 className="text-xs tracking-[0.5em] text-blue-500 font-bold mb-4 uppercase">Lead Instructor</h2>
@@ -166,7 +316,7 @@ const App: React.FC = () => {
       <section id="apply" className="py-32 px-8 bg-stone-900/30">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-myeongjo mb-4">지금 지원하세요</h2>
+            <h2 className="text-3xl font-myeongjo mb-4 text-blue-400">JOIN THE MOVEMENT</h2>
             <p className="text-stone-400 font-light">글로벌 에듀테크 전문가로의 도약, 연세대학교가 함께합니다.</p>
           </div>
           
@@ -220,14 +370,36 @@ const App: React.FC = () => {
         </div>
       </section>
 
-      <footer className="py-12 px-8 border-t border-white/5 text-center text-xs text-stone-600 tracking-widest uppercase">
+      {/* Footer */}
+      <footer className="py-12 px-8 border-t border-white/5 text-center text-xs text-stone-600 tracking-widest uppercase relative">
         <div className="flex justify-center gap-8 mb-4">
           <a href="#" className="hover:text-white transition-colors">Instagram</a>
           <a href="#" className="hover:text-white transition-colors">YouTube</a>
           <a href="#" className="hover:text-white transition-colors">LinkedIn</a>
         </div>
         <p>&copy; 2024 YONSEI UNIVERSITY FUTURE EDUCATION CENTER. ALL RIGHTS RESERVED.</p>
+        
+        {/* Hidden Admin Entry */}
+        <button 
+          onClick={() => setAdminView('login')}
+          className="absolute right-8 bottom-8 text-[10px] text-stone-800 hover:text-stone-500 transition-colors"
+        >
+          ADMIN
+        </button>
       </footer>
+
+      {/* Modals */}
+      {adminView === 'login' && (
+        <AdminLogin 
+          onLogin={() => setAdminView('dashboard')} 
+          onClose={() => setAdminView('none')} 
+        />
+      )}
+      {adminView === 'dashboard' && (
+        <AdminDashboard 
+          onLogout={() => setAdminView('none')} 
+        />
+      )}
     </div>
   );
 };
