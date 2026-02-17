@@ -15,7 +15,7 @@ const Navbar = () => (
       <a href="#overview" className="hover:text-white transition-colors">OVERVIEW</a>
       <a href="#curriculum" className="hover:text-white transition-colors">CURRICULUM</a>
       <a href="#instructor" className="hover:text-white transition-colors">INSTRUCTOR</a>
-      <a href="#apply" className="px-5 py-2 bg-white text-black rounded-sm hover:bg-stone-200 transition-all font-bold text-[10px] tracking-widest">APPLY NOW</a>
+      <a href="#apply" className="px-5 py-2 bg-white text-black rounded-sm hover:bg-stone-200 transition-all font-bold">APPLY NOW</a>
     </div>
   </nav>
 );
@@ -26,19 +26,19 @@ const Hero = () => (
        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px]" />
        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-red-600/20 rounded-full blur-[120px]" />
     </div>
-    <div className="relative z-10 text-center px-6 max-w-7xl">
+    <div className="relative z-10 text-center px-6 max-w-5xl">
       <span className="text-xs tracking-[0.5em] text-blue-400 font-bold mb-8 block uppercase drop-shadow-sm">Yonsei University Professional Course</span>
-      <h1 className="text-4xl md:text-7xl lg:text-8xl font-myeongjo leading-tight mb-8 gradient-text font-bold">
-        AI로 빚어내는<br/>
-        <span className="inline-block mt-2 whitespace-nowrap">K-Culture & Language 에듀테크</span>
+      <h1 className="text-5xl md:text-8xl font-myeongjo leading-tight mb-8 font-bold">
+        <span className="text-white block">AI로 빚어내는</span>
+        <span className="text-white whitespace-nowrap block mt-4">K-Culture & Language 에듀테크</span>
       </h1>
-      <p className="text-lg md:text-xl text-stone-300 max-w-3xl mx-auto font-light leading-relaxed mb-12">
+      <p className="text-lg md:text-xl text-stone-300 max-w-2xl mx-auto font-light leading-relaxed mb-12">
         K-문화의 심장과 한국어 교육의 깊이가 기술의 혁신과 만납니다.<br/>
         생성형 AI로 대한민국을 넘어 세계를 향한 차세대 에듀테크 콘텐츠를 설계하십시오.
       </p>
       <div className="flex flex-col md:flex-row gap-5 justify-center">
-        <a href="#apply" className="px-12 py-5 bg-white text-black font-bold rounded-sm hover:scale-105 transition-all shadow-xl tracking-[0.2em]">지원하기</a>
-        <a href="#curriculum" className="px-12 py-5 glass border border-white/20 text-white font-bold rounded-sm hover:bg-white/10 transition-all tracking-[0.2em]">커리큘럼 확인</a>
+        <a href="#apply" className="px-12 py-5 bg-white text-black font-bold rounded-sm hover:scale-105 transition-all shadow-xl">지원하기</a>
+        <a href="#curriculum" className="px-12 py-5 glass border border-white/20 text-white font-bold rounded-sm hover:bg-white/10 transition-all">커리큘럼 확인</a>
       </div>
     </div>
     <div className="absolute bottom-12 left-1/2 -translate-x-1/2 animate-bounce opacity-50">
@@ -53,7 +53,7 @@ const ModuleCard: React.FC<{ module: Module }> = ({ module }) => (
       <span className="text-5xl font-myeongjo text-blue-500/40 font-bold">0{module.id}</span>
       <span className="text-[10px] tracking-widest text-stone-400 bg-white/5 border border-white/10 px-3 py-1 uppercase">{module.range}</span>
     </div>
-    <h3 className="text-2xl font-semibold mb-4 group-hover:text-blue-400 transition-colors text-white font-myeongjo leading-snug">{module.name}</h3>
+    <h3 className="text-2xl font-semibold mb-4 group-hover:text-blue-400 transition-colors text-white font-myeongjo">{module.name}</h3>
     <p className="text-sm text-stone-400 font-light leading-relaxed mb-10 flex-grow">{module.description}</p>
     <div className="space-y-6">
       {module.weeks.map((w) => (
@@ -64,7 +64,7 @@ const ModuleCard: React.FC<{ module: Module }> = ({ module }) => (
           </div>
           <div className="flex flex-wrap gap-2">
             {w.details.map((d: string, i: number) => (
-              <span key={i} className="text-[10px] text-stone-500 leading-tight">• {d}</span>
+              <span key={i} className="text-[10px] text-stone-400 leading-tight">• {d}</span>
             ))}
           </div>
         </div>
@@ -144,7 +144,6 @@ const AdminDashboard: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
 
   const downloadCSV = () => {
     if (applicants.length === 0) return alert('다운로드할 데이터가 없습니다.');
-    // CSV headers
     const headers = ['성함', '이메일', '연락처', '지원동기', '지원일시'];
     const rows = applicants.map(a => [
       a.name,
@@ -153,7 +152,6 @@ const AdminDashboard: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
       `"${a.motivation.replace(/"/g, '""').replace(/\n/g, ' ')}"`,
       new Date(a.appliedAt).toLocaleString('ko-KR')
     ]);
-    // Add BOM for Excel UTF-8 recognition
     const csvContent = "\uFEFF" + [headers, ...rows].map(e => e.join(",")).join("\n");
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -254,7 +252,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-stone-200 selection:bg-blue-600/40 selection:text-white">
+    <div className="min-h-screen bg-[#050505] text-white selection:bg-blue-600/40 selection:text-white">
       <Navbar />
       <Hero />
 
@@ -266,7 +264,7 @@ const App: React.FC = () => {
             <h3 className="text-4xl md:text-7xl font-myeongjo leading-tight mb-12 text-white font-bold">
               K-문화와 <span className="text-blue-500 whitespace-nowrap inline-block">한국어 교육</span>의<br/>미래를 재정의합니다
             </h3>
-            <div className="space-y-10 text-stone-400 font-light text-lg md:text-xl leading-relaxed">
+            <div className="space-y-10 text-stone-300 font-light text-lg md:text-xl leading-relaxed">
               <p>본 과정은 연세대학교 미래교육원이 제안하는 독보적인 'K-Culture & Language' 에듀테크 전문가 양성 트랙입니다. 한국어 교육의 특수성과 K-콘텐츠의 폭발력을 최첨단 AI 기술과 결합하여 글로벌 시장을 선점할 리더를 육성합니다.</p>
               <p>단순한 기술 습득을 넘어, 전 세계 한국어 학습자들이 열광할 수 있는 고품질 콘텐츠를 기획하고 데이터 기반으로 학습 효과를 입증하는 실전 제작자로 거듭나게 될 것입니다.</p>
             </div>
@@ -285,7 +283,6 @@ const App: React.FC = () => {
             <div className="absolute -inset-8 border border-blue-600/20 rounded-full animate-[spin_30s_linear_infinite]" />
             <div className="absolute -inset-12 border border-red-600/10 rounded-full animate-[spin_45s_linear_infinite_reverse]" />
             <div className="relative aspect-square overflow-hidden rounded-full glass border-2 border-white/20 shadow-[0_0_80px_rgba(59,130,246,0.2)]">
-              {/* 3D 물결과 한국적 미가 결합된 예술적 이미지 */}
               <img 
                 src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop" 
                 alt="Digital Artistic Wave with Korean Motif" 
@@ -328,10 +325,10 @@ const App: React.FC = () => {
           <div className="text-center md:text-left">
             <h2 className="text-xs tracking-[0.8em] text-blue-500 font-black mb-8 uppercase drop-shadow-sm">Master Instructor</h2>
             <h3 className="text-4xl lg:text-5xl font-myeongjo text-white mb-10 italic font-bold underline decoration-blue-600/30 underline-offset-8 whitespace-nowrap">고 제 혁 <span className="text-xl lg:text-2xl font-sans not-italic text-stone-500 ml-6 tracking-widest font-light">Ko Je-hyuk</span></h3>
-            <p className="text-stone-400 font-light text-lg lg:text-xl mb-12 leading-relaxed max-w-2xl">
+            <p className="text-stone-300 font-light text-lg lg:text-xl mb-12 leading-relaxed max-w-2xl">
               "도구의 조작법을 배우는 시대는 지났습니다. 이제는 AI를 우리 문화적 자산과 한국어의 특수성에 결합하여 교육의 깊이를 더하는 '디지털 연금술사'가 필요합니다. 연세에서 그 첫 발을 떼십시오."
             </p>
-            <ul className="space-y-5 text-sm lg:text-base text-stone-500 font-medium tracking-wider">
+            <ul className="space-y-5 text-sm lg:text-base text-stone-400 font-medium tracking-wider">
               <li className="flex items-center gap-3 font-bold text-stone-200"><span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span> 연세대학교 미래교육원 강사</li>
               <li className="flex items-center gap-3"><span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span> 에듀포레 부회장 및 에듀테크 전략 고문</li>
               <li className="flex items-center gap-3"><span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span> 글로벌 에듀테크 비즈니스 모델링 전문가</li>
@@ -420,18 +417,18 @@ const App: React.FC = () => {
           <div className="w-16 h-16 border border-white/10 mx-auto flex items-center justify-center font-myeongjo text-stone-600 mb-10 group-hover:border-blue-500/50 transition-all duration-700 text-2xl font-bold">Y</div>
           <h5 className="text-[11px] tracking-[0.8em] text-stone-500 uppercase mb-10 font-black">Yonsei Future Education Center</h5>
         </div>
-        <div className="flex flex-wrap justify-center gap-10 md:gap-16 text-[10px] tracking-[0.4em] font-bold text-stone-700 uppercase mb-12">
+        <div className="flex flex-wrap justify-center gap-10 md:gap-16 text-[10px] tracking-[0.4em] font-bold text-stone-500 uppercase mb-12">
           <a href="#" className="hover:text-white transition-colors">INSTAGRAM</a>
           <a href="#" className="hover:text-white transition-colors">YOUTUBE</a>
           <a href="#" className="hover:text-white transition-colors">LINKEDIN</a>
           <a href="#" className="hover:text-white transition-colors">PRIVACY POLICY</a>
         </div>
-        <p className="text-[9px] text-stone-800 tracking-[0.3em] uppercase font-medium">&copy; 2024 YONSEI UNIVERSITY FUTURE EDUCATION CENTER. K-Culture & Language EdTech Course. ALL RIGHTS RESERVED.</p>
+        <p className="text-[9px] text-stone-700 tracking-[0.3em] uppercase font-medium">&copy; 2024 YONSEI UNIVERSITY FUTURE EDUCATION CENTER. K-Culture & Language EdTech Course. ALL RIGHTS RESERVED.</p>
         
         {/* Subtle Admin Entry in Bottom Right */}
         <button 
           onClick={() => setAdminMode('login')}
-          className="absolute right-12 bottom-12 opacity-30 hover:opacity-100 transition-all duration-1000 flex items-center gap-3 group/admin p-3 glass rounded-full border-white/10"
+          className="fixed right-12 bottom-12 opacity-30 hover:opacity-100 transition-all duration-1000 flex items-center gap-3 group/admin p-3 glass rounded-full border-white/10 z-[60]"
         >
           <span className="text-[10px] tracking-[0.4em] text-stone-500 font-black group-hover/admin:text-blue-500">SYSTEM LOGIN</span>
           <div className="w-2 h-2 bg-stone-800 rounded-full group-hover/admin:bg-blue-600 transition-all shadow-[0_0_10px_rgba(37,99,235,0)] group-hover/admin:shadow-[0_0_10px_rgba(37,99,235,0.5)]" />
