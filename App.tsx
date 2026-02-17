@@ -28,7 +28,7 @@ const Hero = () => (
     </div>
     <div className="relative z-10 text-center px-6 max-w-7xl">
       <span className="text-xs tracking-[0.5em] text-blue-400 font-bold mb-8 block uppercase drop-shadow-sm">Yonsei University Professional Course</span>
-      <h1 className="text-3xl md:text-7xl lg:text-8xl font-myeongjo leading-tight mb-8 gradient-text font-bold">
+      <h1 className="text-4xl md:text-7xl lg:text-8xl font-myeongjo leading-tight mb-8 gradient-text font-bold">
         AI로 빚어내는<br/>
         <span className="inline-block mt-2 whitespace-nowrap">K-Culture & Language 에듀테크</span>
       </h1>
@@ -91,7 +91,7 @@ const AdminLogin: React.FC<{ onLogin: () => void, onClose: () => void }> = ({ on
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-2xl p-6">
-      <div className="glass max-w-md w-full p-12 rounded-sm border border-white/10">
+      <div className="glass max-w-md w-full p-12 rounded-sm border border-white/10 shadow-2xl">
         <div className="flex justify-between items-center mb-12">
           <div>
             <h2 className="text-3xl font-myeongjo text-white mb-2">관리자 로그인</h2>
@@ -144,6 +144,7 @@ const AdminDashboard: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
 
   const downloadCSV = () => {
     if (applicants.length === 0) return alert('다운로드할 데이터가 없습니다.');
+    // CSV headers
     const headers = ['성함', '이메일', '연락처', '지원동기', '지원일시'];
     const rows = applicants.map(a => [
       a.name,
@@ -152,6 +153,7 @@ const AdminDashboard: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
       `"${a.motivation.replace(/"/g, '""').replace(/\n/g, ' ')}"`,
       new Date(a.appliedAt).toLocaleString('ko-KR')
     ]);
+    // Add BOM for Excel UTF-8 recognition
     const csvContent = "\uFEFF" + [headers, ...rows].map(e => e.join(",")).join("\n");
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -330,7 +332,7 @@ const App: React.FC = () => {
               "도구의 조작법을 배우는 시대는 지났습니다. 이제는 AI를 우리 문화적 자산과 한국어의 특수성에 결합하여 교육의 깊이를 더하는 '디지털 연금술사'가 필요합니다. 연세에서 그 첫 발을 떼십시오."
             </p>
             <ul className="space-y-5 text-sm lg:text-base text-stone-500 font-medium tracking-wider">
-              <li className="flex items-center gap-3"><span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span> 연세대학교 미래교육원 강사</li>
+              <li className="flex items-center gap-3 font-bold text-stone-200"><span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span> 연세대학교 미래교육원 강사</li>
               <li className="flex items-center gap-3"><span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span> 에듀포레 부회장 및 에듀테크 전략 고문</li>
               <li className="flex items-center gap-3"><span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span> 글로벌 에듀테크 비즈니스 모델링 전문가</li>
             </ul>
@@ -429,7 +431,7 @@ const App: React.FC = () => {
         {/* Subtle Admin Entry in Bottom Right */}
         <button 
           onClick={() => setAdminMode('login')}
-          className="absolute right-12 bottom-12 opacity-5 hover:opacity-100 transition-all duration-1000 flex items-center gap-3 group/admin p-2"
+          className="absolute right-12 bottom-12 opacity-30 hover:opacity-100 transition-all duration-1000 flex items-center gap-3 group/admin p-3 glass rounded-full border-white/10"
         >
           <span className="text-[10px] tracking-[0.4em] text-stone-500 font-black group-hover/admin:text-blue-500">SYSTEM LOGIN</span>
           <div className="w-2 h-2 bg-stone-800 rounded-full group-hover/admin:bg-blue-600 transition-all shadow-[0_0_10px_rgba(37,99,235,0)] group-hover/admin:shadow-[0_0_10px_rgba(37,99,235,0.5)]" />
